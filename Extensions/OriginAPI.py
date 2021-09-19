@@ -1,23 +1,30 @@
-import cv2
 import os
 import time
-import numpy as np
 
+import cv2
+import numpy as np
 
 
 def reading_image(image_path: str): 
     image_BGR = cv2.imread(image_path)
+    # cv2.imshow('Original', image_BGR)
 
+    # scale_percent = 40 # percent of original size
+    # width = int(image_BGR.shape[1] * scale_percent / 100)
+    # height = int(image_BGR.shape[0] * scale_percent / 100)
+    # dim = (width, height)
+
+    # image_BGR = cv2.resize(image_BGR, dim, interpolation = cv2.INTER_AREA)
     # Showing Original Image
     # Giving name to the window with Original Image
     # And specifying that window is resizable
-    cv2.namedWindow('Original Image', cv2.WINDOW_NORMAL)
+    # cv2.namedWindow('Original Image', cv2.WINDOW_NORMAL)
     # Pay attention! 'cv2.imshow' takes images in BGR format
-    cv2.imshow('Original Image', image_BGR)
+    # cv2.imshow('Original Image', image_BGR)
     # Waiting for any key being pressed
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
     # Destroying opened window with name 'Original Image'
-    cv2.destroyWindow('Original Image')
+    # cv2.destroyWindow('Original Image')
 
     # # Check point
     # # Showing image shape
@@ -30,8 +37,11 @@ def reading_image(image_path: str):
 
 
 def get_blob(image_BGR):
-    blob = cv2.dnn.blobFromImage(image_BGR, 1 / 255.0, (416, 416),
-                             swapRB=True, crop=False)
+    blob = cv2.dnn.blobFromImage(image_BGR, 1 / 255.0, 
+                             (224, 224),
+                            #  (416, 416),
+                             swapRB=True, 
+                             crop=False)
     return blob
 
 
@@ -41,6 +51,7 @@ def get_labels(path_class_names: str,):
     # and putting them into the list
         labels = [line.strip() for line in f]
     return labels
+
 
 def load_yolo_network(
                         labels: list,
@@ -52,7 +63,8 @@ def load_yolo_network(
     
     
     yolo_network = cv2.dnn.readNetFromDarknet(path_cfg, path_yolo_weights)
-    
+    # yolo_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+    yolo_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
     # Getting list with names of all layers from YOLO v3 network
     layers_names_all = yolo_network.getLayerNames()
 
@@ -74,18 +86,17 @@ def forward_pass(network: object, blob: object, layers_names_output):
     """
 
     network.setInput(blob)  # setting blob as input to the network
-    start = time.time()
+    start_det = time.time()
     output_from_network = network.forward(layers_names_output)
-    end = time.time()
-    print('Objects Detection took {:.5f} seconds'.format(end - start))
+    end_det = time.time()
+    print('Objects Detection took {:.5f} seconds'.format(end_det - start_det))
     return output_from_network
 
-def get_bounding_box(output_from_network, probability_minimum, width, height):
+def get_bounding_box(image_BGR, output_from_network, probability_minimum):
     bounding_boxes = []
     confidences = []
     class_numbers = []
-    w = width
-    h = height
+    h, w = image_BGR.shape[:2]  # Slicing from tuple only first two elements
 
     # Going through all output layers after feed forward pass
     for result in output_from_network:
@@ -194,7 +205,45 @@ def draw_box_and_labels(results_suppression, image_BGR,
             data_traffic_sign['label'] = labels[int(class_numbers[i])]
             
             data_ts.append(data_traffic_sign)
-    return data_ts
+    return image_BGR, data_ts, counter
 
 
+def sliding_window(image, step, ws):
+	# slide a window across the image
+	for y in range(0, image.shape[0] - ws[1], step):
+		for x in range(0, image.shape[1] - ws[0], step):
+			# yield the current window
+			yield (x, y, image[y:y + ws[1], x:x + ws[0]])
+
+
+def stack_images(scale,imgArray):
+    rows = len(imgArray)
+    cols = len(imgArray[0])
+    rowsAvailable = isinstance(imgArray[0], list)
+    width = imgArray[0][0].shape[1]
+    height = imgArray[0][0].shape[0]
+    if rowsAvailable:
+        for x in range ( 0, rows):
+            for y in range(0, cols):
+                if imgArray[x][y].shape[:2] == imgArray[0][0].shape [:2]:
+                    imgArray[x][y] = cv2.resize(imgArray[x][y], (0, 0), None, scale, scale)
+                else:
+                    imgArray[x][y] = cv2.resize(imgArray[x][y], (imgArray[0][0].shape[1], imgArray[0][0].shape[0]), None, scale, scale)
+                if len(imgArray[x][y].shape) == 2: imgArray[x][y]= cv2.cvtColor( imgArray[x][y], cv2.COLOR_GRAY2BGR)
+        imageBlank = np.zeros((height, width, 3), np.uint8)
+        hor = [imageBlank]*rows
+        hor_con = [imageBlank]*rows
+        for x in range(0, rows):
+            hor[x] = np.hstack(imgArray[x])
+        ver = np.vstack(hor)
+    else:
+        for x in range(0, rows):
+            if imgArray[x].shape[:2] == imgArray[0].shape[:2]:
+                imgArray[x] = cv2.resize(imgArray[x], (0, 0), None, scale, scale)
+            else:
+                imgArray[x] = cv2.resize(imgArray[x], (imgArray[0].shape[1], imgArray[0].shape[0]), None,scale, scale)
+            if len(imgArray[x].shape) == 2: imgArray[x] = cv2.cvtColor(imgArray[x], cv2.COLOR_GRAY2BGR)
+        hor= np.hstack(imgArray)
+        ver = hor
+    return ver
 

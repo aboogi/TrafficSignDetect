@@ -26,17 +26,36 @@ File: yolo-3-camera.py
 import numpy as np
 import cv2
 import time
+import os
+
+
+image_path = os.path.join('test_data', 'traffic-sign-to-test.jpg')
+path_class_names = os.path.join('yolo_detect_data', 'classes.names')
+path_yolo_weights = os.path.join('yolo_detect_data', 'yolov3_ts_train_8500.weights')
+path_model = os.path.join(os.getcwd(), 'yolo_detect_data', 'model_tr.h5')
+path_cfg = os.path.join('yolo_detect_data', 'yolov3_ts_test.cfg')
+path_data = os.path.join('yolo_detect_data', 'ts_data.data')
+probability_minimum = 0.4
+threshold = 0.4
+font = cv2.FONT_HERSHEY_SIMPLEX
+
 
 
 """
 Start of:
 Reading stream video from camera
 """
-
+frameWidth = 640         # CAMERA RESOLUTION
+frameHeight = 480
+brightness = 180
+threshold = 0.75         # PROBABLITY THRESHOLD
 # Defining 'VideoCapture' object
 # and reading stream video from camera
-camera = cv2.VideoCapture('http://10.1.30.43:4747/video')
-
+camera = cv2.VideoCapture(0)
+camera.set(3, frameWidth)
+camera.set(4, frameHeight)
+camera.set(10, brightness)
+# camera
 
 # Preparing variables for spatial dimensions of the frames
 h, w = None, None
@@ -58,7 +77,7 @@ Loading YOLO v3 network
 # r'yolo-coco-data\coco.names'
 # or:
 # 'yolo-coco-data\\coco.names'
-with open('yolo-coco-data/coco.names') as f:
+with open(path_class_names) as f:
     # Getting labels reading every line
     # and putting them into the list
     labels = [line.strip() for line in f]
@@ -76,8 +95,7 @@ with open('yolo-coco-data/coco.names') as f:
 # or:
 # 'yolo-coco-data\\yolov3.cfg'
 # 'yolo-coco-data\\yolov3.weights'
-network = cv2.dnn.readNetFromDarknet('yolo-coco-data/yolov3.cfg',
-                                     'yolo-coco-data/yolov3.weights')
+network = cv2.dnn.readNetFromDarknet(path_cfg, path_yolo_weights)
 
 # Getting list with names of all layers from YOLO v3 network
 layers_names_all = network.getLayerNames()

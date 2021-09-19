@@ -4,23 +4,23 @@ from tensorflow.keras.models import load_model
 import time
 import os
 
-from yolo3video import yolo3
-import yolo_data
+# from yolo3video import yolo3
+# import yolo_data
 
 threshold = 0.75
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 model = load_model('model_tr.h5')
-path_img = os.path.join(os.getcwd(), 'yolo_data', 'traffic-sign-to-test.jpg')  # yolo_data\classes.names
-path_weights = os.path.join(os.getcwd(), 'yolo_data', 'yolov3_ts_train_8500.weights')  # yolo_data\yolov3_ts_train_8500.weights
-path_classes = os.path.join(os.getcwd(), 'yolo_data', 'classes.names')
-path_cfg = os.path.join(os.getcwd(), 'yolo_data', 'yolov3_ts_train.cfg')  # yolo_data\yolov3_ts_test.cfg
+# path_img = os.path.join(os.getcwd(), 'yolo_data', 'traffic-sign-to-test.jpg')  # yolo_data\classes.names
+# path_weights = os.path.join(os.getcwd(), 'yolo_data', 'yolov3_ts_train_8500.weights')  # yolo_data\yolov3_ts_train_8500.weights
+# path_classes = os.path.join(os.getcwd(), 'yolo_data', 'classes.names')
+# path_cfg = os.path.join(os.getcwd(), 'yolo_data', 'yolov3_ts_train.cfg')  # yolo_data\yolov3_ts_test.cfg
 
-output_img, data_img = yolo3(path_img, path_weights, path_classes, path_cfg)  # return coord of box and base label
+# output_img, data_img = yolo3(path_img, path_weights, path_classes, path_cfg)  # return coord of box and base label
 
-img = cv2.imread(path_img)
-x_min, x_max, y_min, y_max = data_img[0]['coord_box']
-img_crop = img[y_min:y_max, x_min:x_max]
+# img = cv2.imread(path_img)
+# x_min, x_max, y_min, y_max = data_img[0]['coord_box']
+# img_crop = img[y_Fmin:y_max, x_min:x_max]
 cv2.imshow('Cropped', img_crop)
 predictions = model.predict(img_crop)
 class_index = model.predict_classes(img_crop)
