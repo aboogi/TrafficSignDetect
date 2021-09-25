@@ -32,7 +32,7 @@ frameHeight = 480
 brightness = 180
 threshold = 0.75 
 
-camera = cv2.VideoCapture('http://192.168.1.10:4747/video')
+camera = cv2.VideoCapture('http://192.168.43.1:4747/video')
 camera.set(3, frameWidth)
 camera.set(4, frameHeight)
 camera.set(10, brightness)
