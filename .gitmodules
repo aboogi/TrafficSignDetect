@@ -1,6 +1,6 @@
 [submodule "TutorialYolo_SearchTrafficSigns"]
-	path = TutorialYolo_SearchTrafficSigns
+	path = _TutorialYolo_SearchTrafficSigns
 	url = git@github.com:aboogi/TutorialYolo_SearchTrafficSigns.git
 [submodule "TrafficSign_DefineType_1"]
-	path = TrafficSign_DefineType_1
+	path = _TrafficSign_DefineType
 	url = git@github.com:aboogi/TrafficSign_DefineType_1.git
