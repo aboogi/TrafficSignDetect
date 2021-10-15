@@ -33,7 +33,7 @@ from PyQt5.QtGui import QPixmap
 import design
 
 # Importing YOLO v3 module to Detect Objects on image
-from yolo3image import yolo3
+# from yolo_image import yolo_image
 
 
 """
@@ -89,7 +89,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         image_path = image_path[0]  # /home/my_name/Downloads/example.png
 
         # Passing full path to loaded image into YOLO v3 algorithm
-        yolo3(image_path)
+        # yolo_image(image_path)
 
         # Opening resulted image with QPixmap class that is used to
         # show image inside Label object
