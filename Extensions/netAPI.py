@@ -186,8 +186,11 @@ class netAPI:
                 y_max = y_min + box_height
                 data_traffic_sign['coord_box'] = [x_min, x_max, y_min, y_max]
                 data_traffic_sign['label'] = labels[int(class_numbers[i])]
-                
-                data_ts.append(data_traffic_sign)
+                print('tut', box_width, box_height, box_width / box_height)
+                if 0.7 < box_width / box_height < 1.3:
+                    data_ts.append(data_traffic_sign)
+                    print('tam')
+                print(data_ts)
         return image_BGR, data_ts, counter
 
 
