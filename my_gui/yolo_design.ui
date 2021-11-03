@@ -272,7 +272,7 @@
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0">
       <item>
-       <widget class="QToolButton" name="toolButton">
+       <widget class="QToolButton" name="dirImageButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -285,7 +285,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="dirImageButton"/>
+       <widget class="QLineEdit" name="pathImage"/>
       </item>
      </layout>
     </item>
@@ -324,5 +324,38 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>dirImageButton</sender>
+   <signal>clicked()</signal>
+   <receiver>pathImage</receiver>
+   <slot>paste()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>16</x>
+     <y>643</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>65</x>
+     <y>651</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dirVideoButton</sender>
+   <signal>clicked()</signal>
+   <receiver>pathVideoStream</receiver>
+   <slot>paste()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>24</x>
+     <y>681</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>60</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
