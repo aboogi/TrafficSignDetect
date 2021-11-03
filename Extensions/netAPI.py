@@ -3,7 +3,7 @@ import time
 
 import cv2
 import numpy as np
-
+import copy
 
 class netAPI:
     config = {
@@ -158,8 +158,8 @@ class netAPI:
 
                 # Getting current bounding box coordinates,
                 # its width and height
-                x_min, y_min = bounding_boxes[i][0], bounding_boxes[i][1]
-                box_width, box_height = bounding_boxes[i][2], bounding_boxes[i][3]
+                x_min, y_min = bounding_boxes[i][0] - 7, bounding_boxes[i][1] - 4
+                box_width, box_height = bounding_boxes[i][2] + 14, bounding_boxes[i][3] + 8
 
                 # Preparing colour for current bounding box
                 # and converting from numpy array to list
@@ -180,7 +180,7 @@ class netAPI:
 
                 # Putting text with label and confidence on the original image
                 cv2.putText(image_BGR, text_box_current, (x_min, y_min - 5),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.7, colour_box_current, 2)
+                            cv2.FONT_HERSHEY_COMPLEX, 0.5, colour_box_current, 2)
                 
                 x_max = x_min + box_width
                 y_max = y_min + box_height
@@ -188,7 +188,7 @@ class netAPI:
                 data_traffic_sign['label'] = labels[int(class_numbers[i])]
                 print('tut', box_width, box_height, box_width / box_height)
                 if 0.7 < box_width / box_height < 1.3:
-                    data_ts.append(data_traffic_sign)
+                    data_ts.append(copy.deepcopy(data_traffic_sign))
                     print('tam')
                 print(data_ts)
         return image_BGR, data_ts, counter
